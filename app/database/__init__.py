@@ -1,1 +1,1 @@
-"""Database package placeholder."""
+"""Database package."""
