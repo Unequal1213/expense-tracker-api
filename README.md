@@ -28,3 +28,17 @@ Check the health endpoint:
 ```bash
 curl http://localhost:8000/health
 ```
+
+## API
+
+### Health
+
+- `GET /health`
+
+### Categories
+
+- `POST /categories`
+- `GET /categories`
+- `GET /categories/{category_id}`
+- `PATCH /categories/{category_id}`
+- `DELETE /categories/{category_id}`

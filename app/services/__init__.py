@@ -1,1 +1,1 @@
-"""Business logic service package placeholder."""
+"""Business logic services."""
