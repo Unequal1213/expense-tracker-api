@@ -24,6 +24,22 @@ migrations, and GitHub Actions CI.
 - Ruff linting
 - GitHub Actions CI for automated checks
 
+## Screenshots
+
+Swagger UI overview showing the available health, category, transaction, and
+summary endpoints.
+
+![Swagger API overview](docs/images/swagger-overview.png)
+
+Example request body for creating a transaction through the Swagger UI.
+
+![Create transaction example](docs/images/create-transaction-example.png)
+
+Financial summary endpoint response showing totals, balance, counts, and totals
+grouped by category.
+
+![Transaction summary example](docs/images/transaction-summary-example.png)
+
 ## Tech Stack
 
 - Python 3.13
