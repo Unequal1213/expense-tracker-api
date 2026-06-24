@@ -1,12 +1,16 @@
+from datetime import date, datetime
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, Response, status
+from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
 from sqlalchemy.orm import Session
 
 from app.api.dependencies import get_db
 from app.schemas.transaction import (
     TransactionCreate,
     TransactionResponse,
+    TransactionSortBy,
+    TransactionSortOrder,
+    TransactionType,
     TransactionUpdate,
 )
 from app.services import transaction as transaction_service
@@ -36,8 +40,28 @@ def create_transaction(
 
 
 @router.get("", response_model=list[TransactionResponse])
-def list_transactions(db: DbSession) -> list[TransactionResponse]:
-    return transaction_service.list_transactions(db)
+def list_transactions(
+    db: DbSession,
+    limit: Annotated[int, Query(ge=1, le=100)] = 20,
+    offset: Annotated[int, Query(ge=0)] = 0,
+    type: TransactionType | None = None,
+    category_id: int | None = None,
+    date_from: date | datetime | None = None,
+    date_to: date | datetime | None = None,
+    sort_by: TransactionSortBy = "transaction_date",
+    sort_order: TransactionSortOrder = "desc",
+) -> list[TransactionResponse]:
+    return transaction_service.list_transactions(
+        db,
+        limit=limit,
+        offset=offset,
+        transaction_type=type,
+        category_id=category_id,
+        date_from=date_from,
+        date_to=date_to,
+        sort_by=sort_by,
+        sort_order=sort_order,
+    )
 
 
 @router.get("/{transaction_id}", response_model=TransactionResponse)

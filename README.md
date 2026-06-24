@@ -50,3 +50,6 @@ curl http://localhost:8000/health
 - `GET /transactions/{transaction_id}`
 - `PATCH /transactions/{transaction_id}`
 - `DELETE /transactions/{transaction_id}`
+
+`GET /transactions` supports `limit`, `offset`, `type`, `category_id`,
+`date_from`, `date_to`, `sort_by`, and `sort_order` query parameters.

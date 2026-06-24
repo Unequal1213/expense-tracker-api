@@ -4,6 +4,9 @@ from app.schemas.category import CategoryCreate, CategoryResponse, CategoryUpdat
 from app.schemas.transaction import (
     TransactionCreate,
     TransactionResponse,
+    TransactionSortBy,
+    TransactionSortOrder,
+    TransactionType,
     TransactionUpdate,
 )
 
@@ -13,5 +16,8 @@ __all__ = [
     "CategoryUpdate",
     "TransactionCreate",
     "TransactionResponse",
+    "TransactionSortBy",
+    "TransactionSortOrder",
+    "TransactionType",
     "TransactionUpdate",
 ]

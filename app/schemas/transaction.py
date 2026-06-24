@@ -5,6 +5,14 @@ from typing import Literal
 from pydantic import BaseModel, ConfigDict, Field
 
 TransactionType = Literal["income", "expense"]
+TransactionSortBy = Literal[
+    "transaction_date",
+    "created_at",
+    "updated_at",
+    "amount",
+    "type",
+]
+TransactionSortOrder = Literal["asc", "desc"]
 
 
 class TransactionCreate(BaseModel):

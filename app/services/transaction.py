@@ -1,9 +1,17 @@
+from datetime import date, datetime, time
+
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.models.category import Category
 from app.models.transaction import Transaction
-from app.schemas.transaction import TransactionCreate, TransactionUpdate
+from app.schemas.transaction import (
+    TransactionCreate,
+    TransactionSortBy,
+    TransactionSortOrder,
+    TransactionType,
+    TransactionUpdate,
+)
 
 
 def create_transaction(
@@ -22,9 +30,57 @@ def create_transaction(
     return transaction
 
 
-def list_transactions(db: Session) -> list[Transaction]:
-    transactions = db.scalars(select(Transaction).order_by(Transaction.id)).all()
+def list_transactions(
+    db: Session,
+    *,
+    limit: int = 20,
+    offset: int = 0,
+    transaction_type: TransactionType | None = None,
+    category_id: int | None = None,
+    date_from: date | datetime | None = None,
+    date_to: date | datetime | None = None,
+    sort_by: TransactionSortBy = "transaction_date",
+    sort_order: TransactionSortOrder = "desc",
+) -> list[Transaction]:
+    statement = select(Transaction)
+
+    if transaction_type is not None:
+        statement = statement.where(Transaction.type == transaction_type)
+
+    if category_id is not None:
+        statement = statement.where(Transaction.category_id == category_id)
+
+    if date_from is not None:
+        statement = statement.where(
+            Transaction.transaction_date >= normalize_start_datetime(date_from)
+        )
+
+    if date_to is not None:
+        statement = statement.where(
+            Transaction.transaction_date <= normalize_end_datetime(date_to)
+        )
+
+    sort_column = getattr(Transaction, sort_by)
+    if sort_order == "desc":
+        sort_column = sort_column.desc()
+
+    statement = statement.order_by(sort_column).offset(offset).limit(limit)
+    transactions = db.scalars(statement).all()
     return list(transactions)
+
+
+def normalize_start_datetime(value: date | datetime) -> datetime:
+    if isinstance(value, datetime):
+        return value
+
+    return datetime.combine(value, time.min)
+
+
+def normalize_end_datetime(value: date | datetime) -> datetime:
+    if isinstance(value, datetime):
+        return value
+
+    return datetime.combine(value, time.max)
 
 
 def get_transaction(db: Session, transaction_id: int) -> Transaction | None:
