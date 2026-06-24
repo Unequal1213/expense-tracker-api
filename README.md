@@ -42,3 +42,11 @@ curl http://localhost:8000/health
 - `GET /categories/{category_id}`
 - `PATCH /categories/{category_id}`
 - `DELETE /categories/{category_id}`
+
+### Transactions
+
+- `POST /transactions`
+- `GET /transactions`
+- `GET /transactions/{transaction_id}`
+- `PATCH /transactions/{transaction_id}`
+- `DELETE /transactions/{transaction_id}`
