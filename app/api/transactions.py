@@ -10,6 +10,7 @@ from app.schemas.transaction import (
     TransactionResponse,
     TransactionSortBy,
     TransactionSortOrder,
+    TransactionSummaryResponse,
     TransactionType,
     TransactionUpdate,
 )
@@ -62,6 +63,11 @@ def list_transactions(
         sort_by=sort_by,
         sort_order=sort_order,
     )
+
+
+@router.get("/summary", response_model=TransactionSummaryResponse)
+def get_transaction_summary(db: DbSession) -> TransactionSummaryResponse:
+    return transaction_service.get_transaction_summary(db)
 
 
 @router.get("/{transaction_id}", response_model=TransactionResponse)

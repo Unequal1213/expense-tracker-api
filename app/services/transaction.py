@@ -1,4 +1,5 @@
 from datetime import date, datetime, time
+from decimal import Decimal
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -9,6 +10,7 @@ from app.schemas.transaction import (
     TransactionCreate,
     TransactionSortBy,
     TransactionSortOrder,
+    TransactionSummaryResponse,
     TransactionType,
     TransactionUpdate,
 )
@@ -81,6 +83,42 @@ def normalize_end_datetime(value: date | datetime) -> datetime:
         return value
 
     return datetime.combine(value, time.max)
+
+
+def get_transaction_summary(db: Session) -> TransactionSummaryResponse:
+    total_income = Decimal("0")
+    total_expense = Decimal("0")
+    income_count = 0
+    expense_count = 0
+    totals_by_category: dict[str, Decimal] = {}
+
+    rows = db.execute(
+        select(Transaction, Category.name).join(
+            Category,
+            Transaction.category_id == Category.id,
+        )
+    ).all()
+
+    for transaction, category_name in rows:
+        if transaction.type == "income":
+            total_income += transaction.amount
+            income_count += 1
+        else:
+            total_expense += transaction.amount
+            expense_count += 1
+
+        totals_by_category[category_name] = (
+            totals_by_category.get(category_name, Decimal("0")) + transaction.amount
+        )
+
+    return TransactionSummaryResponse(
+        total_income=total_income,
+        total_expense=total_expense,
+        balance=total_income - total_expense,
+        income_count=income_count,
+        expense_count=expense_count,
+        totals_by_category=totals_by_category,
+    )
 
 
 def get_transaction(db: Session, transaction_id: int) -> Transaction | None:

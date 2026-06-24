@@ -47,6 +47,7 @@ curl http://localhost:8000/health
 
 - `POST /transactions`
 - `GET /transactions`
+- `GET /transactions/summary`
 - `GET /transactions/{transaction_id}`
 - `PATCH /transactions/{transaction_id}`
 - `DELETE /transactions/{transaction_id}`

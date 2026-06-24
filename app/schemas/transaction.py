@@ -42,3 +42,12 @@ class TransactionResponse(BaseModel):
     transaction_date: datetime
     created_at: datetime
     updated_at: datetime
+
+
+class TransactionSummaryResponse(BaseModel):
+    total_income: Decimal
+    total_expense: Decimal
+    balance: Decimal
+    income_count: int
+    expense_count: int
+    totals_by_category: dict[str, Decimal]

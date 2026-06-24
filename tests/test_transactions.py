@@ -319,6 +319,104 @@ def test_transactions_invalid_sort_order_returns_422(client: TestClient) -> None
     assert response.status_code == 422
 
 
+def test_transaction_summary_with_no_transactions(client: TestClient) -> None:
+    response = client.get("/transactions/summary")
+
+    assert response.status_code == 200
+    assert response.json() == {
+        "total_income": "0",
+        "total_expense": "0",
+        "balance": "0",
+        "income_count": 0,
+        "expense_count": 0,
+        "totals_by_category": {},
+    }
+
+
+def test_transaction_summary_with_income_and_expense_transactions(
+    client: TestClient,
+) -> None:
+    income_category_id = create_category(client, name="Salary", type="income")
+    expense_category_id = create_category(client, name="Food", type="expense")
+    create_transaction(client, income_category_id, amount="1000.00", type="income")
+    create_transaction(client, expense_category_id, amount="250.00", type="expense")
+
+    response = client.get("/transactions/summary")
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data["total_income"] == "1000.00"
+    assert data["total_expense"] == "250.00"
+
+
+def test_transaction_summary_balance_calculation(client: TestClient) -> None:
+    income_category_id = create_category(client, name="Salary", type="income")
+    expense_category_id = create_category(client, name="Food", type="expense")
+    create_transaction(client, income_category_id, amount="750.00", type="income")
+    create_transaction(client, expense_category_id, amount="125.50", type="expense")
+
+    response = client.get("/transactions/summary")
+
+    assert response.status_code == 200
+    assert response.json()["balance"] == "624.50"
+
+
+def test_transaction_summary_counts_by_type(client: TestClient) -> None:
+    income_category_id = create_category(client, name="Salary", type="income")
+    expense_category_id = create_category(client, name="Food", type="expense")
+    create_transaction(client, income_category_id, amount="1000.00", type="income")
+    create_transaction(client, income_category_id, amount="200.00", type="income")
+    create_transaction(client, expense_category_id, amount="150.00", type="expense")
+
+    response = client.get("/transactions/summary")
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data["income_count"] == 2
+    assert data["expense_count"] == 1
+
+
+def test_transaction_summary_totals_grouped_by_category(
+    client: TestClient,
+) -> None:
+    salary_category_id = create_category(client, name="Salary", type="income")
+    food_category_id = create_category(client, name="Food", type="expense")
+    create_transaction(client, salary_category_id, amount="1000.00", type="income")
+    create_transaction(client, salary_category_id, amount="500.00", type="income")
+    create_transaction(client, food_category_id, amount="125.00", type="expense")
+
+    response = client.get("/transactions/summary")
+
+    assert response.status_code == 200
+    assert response.json()["totals_by_category"] == {
+        "Salary": "1500.00",
+        "Food": "125.00",
+    }
+
+
+def test_transaction_summary_updates_after_deleting_transaction(
+    client: TestClient,
+) -> None:
+    income_category_id = create_category(client, name="Salary", type="income")
+    first_transaction = create_transaction(
+        client,
+        income_category_id,
+        amount="1000.00",
+        type="income",
+    )
+    create_transaction(client, income_category_id, amount="500.00", type="income")
+
+    delete_response = client.delete(f"/transactions/{first_transaction['id']}")
+    summary_response = client.get("/transactions/summary")
+
+    assert delete_response.status_code == 204
+    data = summary_response.json()
+    assert data["total_income"] == "500.00"
+    assert data["balance"] == "500.00"
+    assert data["income_count"] == 1
+    assert data["totals_by_category"] == {"Salary": "500.00"}
+
+
 def test_get_transaction_by_id(client: TestClient) -> None:
     category_id = create_category(client)
     create_response = client.post(

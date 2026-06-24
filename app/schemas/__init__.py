@@ -6,6 +6,7 @@ from app.schemas.transaction import (
     TransactionResponse,
     TransactionSortBy,
     TransactionSortOrder,
+    TransactionSummaryResponse,
     TransactionType,
     TransactionUpdate,
 )
@@ -18,6 +19,7 @@ __all__ = [
     "TransactionResponse",
     "TransactionSortBy",
     "TransactionSortOrder",
+    "TransactionSummaryResponse",
     "TransactionType",
     "TransactionUpdate",
 ]
