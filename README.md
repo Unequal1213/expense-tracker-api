@@ -5,10 +5,9 @@
 Expense Tracker API is a production-style FastAPI backend for tracking personal
 income, expenses, categories, transactions, and financial summaries.
 
-This project is built as a portfolio backend application for a Junior Python
-Backend Developer role. It demonstrates REST API design, relational database
-modeling, CRUD workflows, filtering, sorting, automated tests, Docker, database
-migrations, and GitHub Actions CI.
+The project demonstrates REST API design, relational database modeling, CRUD
+workflows, filtering, sorting, automated tests, Docker, database migrations,
+and GitHub Actions CI.
 
 ## Features
 
